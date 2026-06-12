@@ -6,18 +6,16 @@ version: 1.0.0+1
 environment:
   sdk: ^3.11.4
 
-
-
 dependencies:
   flutter:
     sdk: flutter
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.9
 
+  # Environment variables
+  flutter_dotenv: ^5.0.2
+
   # State Management
-  # Capped at 2.x: flutter_riverpod 3 transitively requires analyzer >=8, which hive_generator 2.0.1 caps at <7.
   flutter_riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
 
@@ -53,7 +51,6 @@ dependencies:
 
   # Utilities
   freezed_annotation: ^3.1.0
-  # Capped to ^4.9.0: hive_generator 2.0.1 caps json_serializable < 6.11.3, which needs json_annotation ^4.9.0.
   json_annotation: ^4.9.0
   uuid: ^4.5.3
   intl: ^0.20.2
@@ -69,12 +66,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   flutter_lints: ^6.0.0
 
   # Code Generation
-  # Capped: hive_generator 2.0.1 (latest) needs build ^2 and source_gen ^1,
-  # which limits build_runner < 2.9.0 and json_serializable < 6.13.1.
   build_runner: ">=2.4.13 <2.9.0"
   json_serializable: ">=6.8.0 <6.13.1"
   hive_generator: ^2.0.1
@@ -83,31 +77,12 @@ dev_dependencies:
   mocktail: ^1.0.3
   fake_async: ^1.3.1
 
-# The following section is specific to Flutter packages.
 flutter:
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
 
-  # # Custom Fonts
-  # fonts:
-  #   - family: Inter
-  #     fonts:
-  #       - asset: assets/fonts/Inter-Regular.ttf
-  #         weight: 400
-  #       - asset: assets/fonts/Inter-Medium.ttf
-  #         weight: 500
-  #       - asset: assets/fonts/Inter-SemiBold.ttf
-  #         weight: 600
-  #       - asset: assets/fonts/Inter-Bold.ttf
-  #         weight: 700
   assets:
+    - .env                            # ← ADDED
     - assets/images/picture1.png
     - assets/images/img2.png
     - assets/images/img3.png
     - assets/images/img4.png
-
-
-
-
