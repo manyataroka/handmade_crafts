@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'profile_view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,12 +29,14 @@ class JewelryItem {
   final String name;
   final double price;
   final String imagePath;
+  final String category;
   bool isFavorited;
 
   JewelryItem({
     required this.name,
     required this.price,
     required this.imagePath,
+    required this.category,
     this.isFavorited = false,
   });
 }
@@ -50,9 +54,7 @@ class _DashboardScreenViewState extends State<DashboardScreenView> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    setState(() => _selectedIndex = index);
   }
 
   @override
@@ -172,46 +174,174 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedFilter = 0;
-  final List<String> _filters = ['Trending Now', 'All', 'Now'];
+  final List<String> _filters = ['All', 'Trending Now', 'New'];
+  String _searchQuery = '';
 
   final List<JewelryItem> _items = [
     JewelryItem(
-      name: 'Beads Necklace',
-      price: 400,
-      imagePath: 'assets/images/img2.png',
+      name: 'Pearl Beads Bracelet',
+      price: 699,
+      imagePath: 'assets/images/img5.jpg',
+      category: 'bracelet',
     ),
     JewelryItem(
-      name: 'Round Chain',
-      price: 325,
-      imagePath: 'assets/images/img3.png',
+      name: 'Adjustable Bracelet',
+      price: 499,
+      imagePath: 'assets/images/img6.jpg',
+      category: 'bracelet',
     ),
     JewelryItem(
-      name: 'Beads Pearl Bracelet',
-      price: 450,
-      imagePath: 'assets/images/img4.png',
+      name: 'Silver Ring',
+      price: 999,
+      imagePath: 'assets/images/img7.jpg',
+      category: 'ring',
+    ),
+    JewelryItem(
+      name: 'Panchadhatu Ring',
+      price: 1099,
+      imagePath: 'assets/images/img8.jpg',
+      category: 'ring',
+    ),
+    JewelryItem(
+      name: 'Adjustable Silver Ring',
+      price: 999,
+      imagePath: 'assets/images/img9.jpg',
+      category: 'ring',
+    ),
+    JewelryItem(
+      name: 'Pearl Bracelet',
+      price: 599,
+      imagePath: 'assets/images/img10.jpg',
+      category: 'bracelet',
+    ),
+    JewelryItem(
+      name: 'Pearl Neck Piece',
+      price: 649,
+      imagePath: 'assets/images/img2.jpg',
+      category: 'necklace',
+    ),
+    JewelryItem(
+      name: 'Gemstone Anklet',
+      price: 1199,
+      imagePath: 'assets/images/img12.jpg',
+      category: 'anklet',
+    ),
+    JewelryItem(
+      name: 'Laliguras Necklace Set',
+      price: 3099,
+      imagePath: 'assets/images/img13.jpg',
+      category: 'necklace',
+    ),
+    JewelryItem(
+      name: 'Silver NecklaceSet',
+      price: 2099,
+      imagePath: 'assets/images/img14.jpg',
+      category: 'necklace',
+    ),
+    JewelryItem(
+      name: 'Flower Necklace Set',
+      price: 1099,
+      imagePath: 'assets/images/img15.jpg',
+      category: 'necklace',
+    ),
+    JewelryItem(
+      name: 'Flower earring',
+      price: 499,
+      imagePath: 'assets/images/img17.jpg',
+      category: 'earring',
+    ),
+    JewelryItem(
+      name: 'Artisan earring',
+      price: 899,
+      imagePath: 'assets/images/img16.jpg',
+      category: 'earring',
+    ),
+    JewelryItem(
+      name: 'Dropdown Earring',
+      price: 799,
+      imagePath: 'assets/images/img18.jpg',
+      category: 'earring',
     ),
   ];
 
+  // ── FIX: Load favorites from SharedPreferences on init ──
+  @override
+  void initState() {
+    super.initState();
+    _loadFavorites();
+  }
+
+  Future<void> _loadFavorites() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getStringList('favorites') ?? [];
+    setState(() {
+      for (final item in _items) {
+        item.isFavorited = saved.contains(item.name);
+      }
+    });
+  }
+
+  Future<void> _toggleFavorite(JewelryItem item) async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() => item.isFavorited = !item.isFavorited);
+
+    final saved = prefs.getStringList('favorites') ?? [];
+    if (item.isFavorited) {
+      if (!saved.contains(item.name)) saved.add(item.name);
+    } else {
+      saved.remove(item.name);
+    }
+    await prefs.setStringList('favorites', saved);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final double bottomPadding =
+        kBottomNavigationBarHeight + MediaQuery.of(context).padding.bottom + 16;
+
+    // Prepare filtered display items for the grid based on selected filter.
+    final trendingNames = {
+      'pearl beads bracelet',
+      'panchadhatu ring',
+      'laliguras necklace set',
+      'dropdown earring',
+    };
+    final newNames = {
+      'flower earring',
+      'pearl neck piece',
+      'adjustable bracelet',
+    };
+
+    List<JewelryItem> _displayItemsForGrid() {
+      if (_selectedFilter == 1) {
+        return _items
+            .where((it) => trendingNames.contains(it.name.toLowerCase()))
+            .toList();
+      } else if (_selectedFilter == 2) {
+        return _items
+            .where((it) => newNames.contains(it.name.toLowerCase()))
+            .toList();
+      }
+      return List.of(_items);
+    }
+
     return SafeArea(
       child: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
         slivers: [
+          // ── Header ──
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Grid menu icon
                   const Icon(
                     Icons.grid_view_rounded,
                     color: Color(0xFFE53935),
                     size: 28,
                   ),
                   const SizedBox(height: 20),
-
-                  // Title
                   const Text(
                     'Match Your Style',
                     style: TextStyle(
@@ -221,12 +351,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-
-                  // Search bar
-                  _SearchBar(),
+                  _SearchBar(
+                    onChanged: (v) => setState(() => _searchQuery = v.trim()),
+                  ),
                   const SizedBox(height: 18),
-
-                  // Filter chips
                   _FilterChips(
                     filters: _filters,
                     selectedIndex: _selectedFilter,
@@ -238,55 +366,265 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // 2-column product grid (first 2 items)
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 12,
-                childAspectRatio: 0.75,
-              ),
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  return _ProductCard(
-                    item: _items[index],
-                    onFavoriteToggle: () {
-                      setState(() {
-                        _items[index].isFavorited = !_items[index].isFavorited;
-                      });
-                    },
+          // ── Grid or Search Results ──
+          if (_searchQuery.isNotEmpty) ...[
+            ..._buildCategorySection('necklace', 'Necklaces'),
+            ..._buildCategorySection('bracelet', 'Bracelets'),
+            ..._buildCategorySection('earring', 'Earrings'),
+            ..._buildCategorySection('ring', 'Rings'),
+          ] else ...[
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 12,
+                  // FIX: increased childAspectRatio to prevent overflow
+                  childAspectRatio: 0.72,
+                ),
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final displayItems = _displayItemsForGrid();
+                  final item = displayItems[index];
+                  return GestureDetector(
+                    onTap: () => _showProductSheet(context, item),
+                    child: _ProductCard(
+                      item: item,
+                      onFavoriteToggle: () => _toggleFavorite(item),
+                    ),
                   );
-                },
-                childCount: 2, // only first 2 in grid
+                }, childCount: _displayItemsForGrid().length),
               ),
             ),
-          ),
+          ],
 
-          // Full-width card (3rd item)
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-              child: _WideProductCard(
-                item: _items[2],
-                onFavoriteToggle: () {
-                  setState(() {
-                    _items[2].isFavorited = !_items[2].isFavorited;
-                  });
-                },
-              ),
-            ),
-          ),
+          SliverToBoxAdapter(child: SizedBox(height: bottomPadding)),
         ],
       ),
+    );
+  }
+
+  List<Widget> _buildCategorySection(String categoryKey, String title) {
+    final matches = _items.where((it) {
+      final q = _searchQuery.toLowerCase().trim();
+      final name = it.name.toLowerCase();
+      final cat = it.category.toLowerCase();
+
+      // Match when the item's category matches the section and either:
+      // - the name contains the query, or
+      // - the category and query partially match (handles plural/singular/partial)
+      final categoryMatchesSection = cat == categoryKey;
+      final categoryMatchByQuery =
+          cat.contains(q) ||
+          q.contains(cat) ||
+          (q.endsWith('s') && q.substring(0, q.length - 1) == cat) ||
+          (cat.endsWith('s') && cat.substring(0, cat.length - 1) == q);
+
+      return categoryMatchesSection &&
+          (name.contains(q) || categoryMatchByQuery);
+    }).toList();
+
+    if (matches.isEmpty) return [];
+
+    return [
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+          child: Text(
+            title,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+      SliverPadding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        sliver: SliverGrid(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: 0.72,
+          ),
+          delegate: SliverChildBuilderDelegate((context, index) {
+            final item = matches[index];
+            return GestureDetector(
+              onTap: () => _showProductSheet(context, item),
+              child: _ProductCard(
+                item: item,
+                onFavoriteToggle: () => _toggleFavorite(item),
+              ),
+            );
+          }, childCount: matches.length),
+        ),
+      ),
+    ];
+  }
+
+  void _showProductSheet(BuildContext context, JewelryItem item) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        int qty = 1;
+        return StatefulBuilder(
+          builder: (context, setStateSheet) {
+            return Padding(
+              padding: MediaQuery.of(context).viewInsets,
+              child: SizedBox(
+                height: 320,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 12),
+                    Container(
+                      width: 48,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: Colors.black12,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          // ── FIX: Use Image.asset with error builder ──
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.asset(
+                              item.imagePath,
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                              errorBuilder: (c, e, s) => Container(
+                                color: const Color(0xFFF5F0EB),
+                                width: 100,
+                                height: 100,
+                                child: const Icon(
+                                  Icons.image_not_supported_outlined,
+                                  color: Colors.black26,
+                                  size: 32,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.name,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  '₹ ${item.price.toStringAsFixed(0)}',
+                                  style: const TextStyle(
+                                    color: Color(0xFFE53935),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: () => setStateSheet(() {
+                            if (qty > 1) qty--;
+                          }),
+                          icon: const Icon(Icons.remove_circle_outline),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          qty.toString(),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        IconButton(
+                          onPressed: () => setStateSheet(() => qty++),
+                          icon: const Icon(Icons.add_circle_outline),
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFE53935),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Added $qty × ${item.name} to cart',
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            child: Text(
+                              'Add to cart',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
 
 // ==================== SEARCH BAR ====================
 
-class _SearchBar extends StatelessWidget {
+class _SearchBar extends StatefulWidget {
+  final ValueChanged<String>? onChanged;
+  const _SearchBar({this.onChanged});
+
+  @override
+  State<_SearchBar> createState() => _SearchBarState();
+}
+
+class _SearchBarState extends State<_SearchBar> {
+  // FIX: controller moved to State so clear() works correctly
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -295,12 +633,28 @@ class _SearchBar extends StatelessWidget {
         color: const Color(0xFFEEEEEE),
         borderRadius: BorderRadius.circular(30),
       ),
-      child: const Row(
+      child: Row(
         children: [
-          SizedBox(width: 14),
-          Icon(Icons.search, color: Colors.black54, size: 22),
-          SizedBox(width: 8),
-          Text('Search', style: TextStyle(color: Colors.black45, fontSize: 16)),
+          const SizedBox(width: 14),
+          const Icon(Icons.search, color: Colors.black54, size: 22),
+          const SizedBox(width: 8),
+          Expanded(
+            child: TextField(
+              controller: _controller,
+              onChanged: widget.onChanged,
+              decoration: const InputDecoration(
+                hintText: 'Search (bracelet, necklace, earring)',
+                border: InputBorder.none,
+              ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.clear, size: 20, color: Colors.black45),
+            onPressed: () {
+              _controller.clear();
+              widget.onChanged?.call('');
+            },
+          ),
         ],
       ),
     );
@@ -362,6 +716,7 @@ class _FilterChips extends StatelessWidget {
 class _ProductCard extends StatelessWidget {
   final JewelryItem item;
   final VoidCallback onFavoriteToggle;
+  static const double _imageHeight = 155;
 
   const _ProductCard({required this.item, required this.onFavoriteToggle});
 
@@ -379,34 +734,38 @@ class _ProductCard extends StatelessWidget {
           ),
         ],
       ),
+      // FIX: use Column with mainAxisSize.min inside a fixed-height container
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Image area
-          Expanded(
+          // Image
+          SizedBox(
+            height: _imageHeight,
             child: Stack(
-              fit: StackFit.expand,
               children: [
                 ClipRRect(
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(16),
                   ),
-                  child: Image.asset(
-                    item.imagePath,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: const Color(0xFFF5F0EB),
-                      child: const Center(
-                        child: Icon(
-                          Icons.image_not_supported_outlined,
-                          size: 40,
-                          color: Colors.black26,
+                  child: SizedBox.expand(
+                    child: Image.asset(
+                      item.imagePath,
+                      fit: BoxFit.cover,
+                      // FIX: proper error builder shows placeholder instead of crash
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: const Color(0xFFF5F0EB),
+                        child: const Center(
+                          child: Icon(
+                            Icons.image_not_supported_outlined,
+                            size: 40,
+                            color: Colors.black26,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-                // Heart icon
                 Positioned(
                   top: 8,
                   right: 8,
@@ -432,16 +791,17 @@ class _ProductCard extends StatelessWidget {
             ),
           ),
 
-          // Name & Price
+          // FIX: reduced padding to avoid overflow
           Padding(
-            padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   item.name,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 13.5,
+                    fontSize: 13,
                     color: Colors.black87,
                   ),
                   textAlign: TextAlign.center,
@@ -466,116 +826,12 @@ class _ProductCard extends StatelessWidget {
   }
 }
 
-// ==================== WIDE PRODUCT CARD ====================
-
-class _WideProductCard extends StatelessWidget {
-  final JewelryItem item;
-  final VoidCallback onFavoriteToggle;
-
-  const _WideProductCard({required this.item, required this.onFavoriteToggle});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Image area
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
-                ),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 220,
-                  child: Image.asset(
-                    item.imagePath,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: const Color(0xFFF5F0EB),
-                      child: const Center(
-                        child: Icon(
-                          Icons.image_not_supported_outlined,
-                          size: 56,
-                          color: Colors.black26,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              // Heart icon
-              Positioned(
-                top: 10,
-                right: 10,
-                child: GestureDetector(
-                  onTap: onFavoriteToggle,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.85),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      item.isFavorited ? Icons.favorite : Icons.favorite_border,
-                      color: const Color(0xFFE53935),
-                      size: 22,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          // Name & Price
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-            child: Column(
-              children: [
-                Text(
-                  item.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '₹ ${item.price.toStringAsFixed(0)}',
-                  style: const TextStyle(
-                    color: Color(0xFFE53935),
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+// _WideProductCard removed — last item now included in the grid instead of full-width
 
 // ==================== OTHER SCREENS ====================
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return const SafeArea(
@@ -591,7 +847,6 @@ class MenuScreen extends StatelessWidget {
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return const SafeArea(
@@ -605,18 +860,4 @@ class CartScreen extends StatelessWidget {
   }
 }
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const SafeArea(
-      child: Center(
-        child: Text(
-          'Profile',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
-}
+// ProfileScreen moved to profile_view.dart
