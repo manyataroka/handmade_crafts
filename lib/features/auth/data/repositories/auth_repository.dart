@@ -61,7 +61,9 @@ class AuthRepository {
     }
   }
 
-  Future<void> logout() async {}
+  Future<void> logout() async {
+    await _local.logout();
+  }
 
   Future<Object?> isLoggedIn() async {}
 }

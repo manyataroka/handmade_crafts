@@ -22,7 +22,7 @@ class _SignupViewState extends ConsumerState<SignupView> {
   final TextEditingController confirmPasswordCtrl = TextEditingController();
   final TextEditingController phoneCtrl = TextEditingController();
 
-  String selectedCountryCode = '+977'; // default Nepal
+  String selectedCountryCode = '+977';
   String? selectedGender;
 
   @override
@@ -99,16 +99,13 @@ class _SignupViewState extends ConsumerState<SignupView> {
     return Scaffold(
       body: Container(
         width: double.infinity,
-
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFF5F5F5), Color(0xFFF8D7DA)],
-
+            colors: [Color(0xFFFFFFFF), Color(0xFFFFF0F0)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
-
         child: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
@@ -124,7 +121,6 @@ class _SignupViewState extends ConsumerState<SignupView> {
                 children: [
                   /// LOGO
                   Image.asset('assets/images/picture1.png', height: 100),
-
                   const SizedBox(height: 20),
 
                   /// TITLE
@@ -133,67 +129,99 @@ class _SignupViewState extends ConsumerState<SignupView> {
                       const Text(
                         "Register",
                         style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black54,
                         ),
                       ),
                       const SizedBox(height: 5),
-                      Container(height: 3, width: 70, color: Colors.red),
+                      Container(height: 3, width: 80, color: Colors.redAccent),
                     ],
                   ),
-
                   const SizedBox(height: 30),
 
                   /// USERNAME
                   TextField(
                     controller: usernameCtrl,
+                    style: const TextStyle(color: Colors.black87),
                     decoration: InputDecoration(
                       hintText: "Username",
-                      prefixIcon: const Icon(Icons.person_outline),
+                      hintStyle: const TextStyle(color: Colors.black45),
+                      prefixIcon: const Icon(
+                        Icons.person_outline,
+                        color: Colors.black54,
+                      ),
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.8),
+                      fillColor: Colors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide.none,
                       ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Colors.redAccent,
+                          width: 2,
+                        ),
+                      ),
                     ),
                   ),
-
                   const SizedBox(height: 15),
 
                   /// EMAIL
                   TextField(
                     controller: emailCtrl,
                     keyboardType: TextInputType.emailAddress,
+                    style: const TextStyle(color: Colors.black87),
                     decoration: InputDecoration(
                       hintText: "Email Address",
-                      prefixIcon: const Icon(Icons.email_outlined),
+                      hintStyle: const TextStyle(color: Colors.black45),
+                      prefixIcon: const Icon(
+                        Icons.email_outlined,
+                        color: Colors.black54,
+                      ),
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.8),
+                      fillColor: Colors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide.none,
                       ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Colors.redAccent,
+                          width: 2,
+                        ),
+                      ),
                     ),
                   ),
-
+                  const SizedBox(height: 15),
                   const SizedBox(height: 15),
 
-                  const SizedBox(height: 15),
-
-                  /// COUNTRY CODE + PHONE (moved into form)
+                  /// COUNTRY CODE + PHONE
                   Row(
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: DropdownButton<String>(
                           value: selectedCountryCode,
                           underline: const SizedBox.shrink(),
+                          style: const TextStyle(
+                            color: Colors.black54,
+                            fontSize: 16,
+                          ),
                           items: const [
                             DropdownMenuItem(
                               value: '+977',
@@ -220,51 +248,82 @@ class _SignupViewState extends ConsumerState<SignupView> {
                           },
                         ),
                       ),
-
                       const SizedBox(width: 10),
-
                       Expanded(
                         child: TextField(
                           controller: phoneCtrl,
                           keyboardType: TextInputType.phone,
+                          style: const TextStyle(color: Colors.black87),
                           decoration: InputDecoration(
                             hintText: 'Phone Number',
-                            prefixIcon: const Icon(Icons.phone_outlined),
+                            hintStyle: const TextStyle(color: Colors.black45),
+                            prefixIcon: const Icon(
+                              Icons.phone_outlined,
+                              color: Colors.black54,
+                            ),
                             filled: true,
-                            fillColor: Colors.white.withOpacity(0.8),
+                            fillColor: Colors.white,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Colors.redAccent,
+                                width: 2,
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 15),
 
-                  /// GENDER (moved into form)
+                  /// GENDER
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: DropdownButton<String>(
                       isExpanded: true,
                       value: selectedGender,
-                      hint: const Text('Select Gender'),
+                      hint: Text(
+                        'Select Gender',
+                        style: TextStyle(color: Colors.black54, fontSize: 16),
+                      ),
+                      dropdownColor: Colors.white,
                       underline: const SizedBox.shrink(),
+                      iconEnabledColor: Colors.black54,
+                      style: TextStyle(color: Colors.black87, fontSize: 16),
                       items: const [
                         DropdownMenuItem(
                           value: 'Female',
-                          child: Text('Female'),
+                          child: Text(
+                            'Female',
+                            style: TextStyle(color: Colors.black87),
+                          ),
                         ),
-                        DropdownMenuItem(value: 'Male', child: Text('Male')),
+                        DropdownMenuItem(
+                          value: 'Male',
+                          child: Text(
+                            'Male',
+                            style: TextStyle(color: Colors.black87),
+                          ),
+                        ),
                         DropdownMenuItem(
                           value: 'Others',
-                          child: Text('Others'),
+                          child: Text(
+                            'Others',
+                            style: TextStyle(color: Colors.black87),
+                          ),
                         ),
                       ],
                       onChanged: (v) {
@@ -280,14 +339,20 @@ class _SignupViewState extends ConsumerState<SignupView> {
                   TextField(
                     controller: passwordCtrl,
                     obscureText: !isPasswordVisible,
+                    style: const TextStyle(color: Colors.black87),
                     decoration: InputDecoration(
                       hintText: "Password",
-                      prefixIcon: const Icon(Icons.lock_outline),
+                      hintStyle: const TextStyle(color: Colors.black45),
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                        color: Colors.black54,
+                      ),
                       suffixIcon: IconButton(
                         icon: Icon(
                           isPasswordVisible
                               ? Icons.visibility
                               : Icons.visibility_off,
+                          color: Colors.black54,
                         ),
                         onPressed: () {
                           setState(() {
@@ -296,32 +361,57 @@ class _SignupViewState extends ConsumerState<SignupView> {
                         },
                       ),
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.8),
+                      fillColor: Colors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide.none,
                       ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Colors.redAccent,
+                          width: 2,
+                        ),
+                      ),
                     ),
                   ),
-
                   const SizedBox(height: 15),
 
                   /// CONFIRM PASSWORD
                   TextField(
                     controller: confirmPasswordCtrl,
                     obscureText: !isPasswordVisible,
+                    style: const TextStyle(color: Colors.black87),
                     decoration: InputDecoration(
                       hintText: "Confirm Password",
-                      prefixIcon: const Icon(Icons.lock_outline),
+                      hintStyle: const TextStyle(color: Colors.black45),
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                        color: Colors.black54,
+                      ),
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.8),
+                      fillColor: Colors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide.none,
                       ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Colors.redAccent,
+                          width: 2,
+                        ),
+                      ),
                     ),
                   ),
-
                   const SizedBox(height: 20),
 
                   /// REGISTER BUTTON
@@ -339,9 +429,10 @@ class _SignupViewState extends ConsumerState<SignupView> {
                       child: const Text(
                         "REGISTER",
                         style: TextStyle(
-                          letterSpacing: 1,
+                          letterSpacing: 1.5,
                           fontSize: 16,
                           color: Colors.white,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
@@ -354,7 +445,10 @@ class _SignupViewState extends ConsumerState<SignupView> {
                     children: [
                       const Text(
                         "Already have an account? ",
-                        style: TextStyle(color: Colors.grey),
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                       GestureDetector(
                         onTap: () {
@@ -363,8 +457,9 @@ class _SignupViewState extends ConsumerState<SignupView> {
                         child: const Text(
                           "Sign in",
                           style: TextStyle(
-                            color: Colors.blueGrey,
+                            color: Colors.redAccent,
                             fontWeight: FontWeight.bold,
+                            fontSize: 16,
                           ),
                         ),
                       ),
