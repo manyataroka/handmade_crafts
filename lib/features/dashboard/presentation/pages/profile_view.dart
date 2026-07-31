@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:handmade_crafts/features/auth/presentation/pages/login_view.dart';
+import 'package:handmade_crafts/features/dashboard/presentation/pages/call_screen.dart';
 import 'settings_view.dart';
 import 'orders_view.dart' show OrdersScreen;
 import 'dashboard_view.dart';
@@ -1124,10 +1125,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               color: Colors.black45,
                             ),
                             onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Calling +977-9812345678...'),
-                                  backgroundColor: Colors.redAccent,
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const CallScreen(),
                                 ),
                               );
                             },

@@ -12,14 +12,11 @@ class App extends ConsumerWidget {
 
     return MaterialApp(
       title: 'Handmade Crafts',
-
       debugShowCheckedModeBanner: false,
 
       theme: ThemeData(
         useMaterial3: true,
-
         colorSchemeSeed: Colors.redAccent,
-
         appBarTheme: const AppBarTheme(
           centerTitle: true,
           backgroundColor: Colors.redAccent,
@@ -28,7 +25,6 @@ class App extends ConsumerWidget {
       ),
 
       darkTheme: ThemeData.dark(),
-
       themeMode: themeMode,
 
       home: const SplashView(),
